@@ -50,9 +50,92 @@ ErrorCode A3200Controller::getErrorCode() const
 
 void A3200Controller::initialise()
 {
-    // not used
+    // Set default motion to absolute
     this->setMotionMode(MOTION_ABSOLUTE);
+}
 
+void A3200Controller::startTaskQueue(const uint8_t taskId)
+{
+    // Put task into Queue mode.
+    bool status = A3200ProgramInitializeQueue(mHandle, (TASKID) taskId);
+
+
+    if(!status) {
+        throw A3200Exception(this->getErrorString().c_str(), this->getErrorCode());
+    }
+
+}
+
+void A3200Controller::blockUntilQueueComplete(const uint32_t pollingTime, const uint8_t taskId)
+{
+    int32_t queueLineCount = 1;
+
+    while(queueLineCount) {
+            // If there are still commands to execute sleep, and then check again on how many
+            // commands are left.
+            Sleep(pollingTime);
+            queueLineCount = this->queueCount();
+            //(handle, TASKID_01, STATUSITEM_QueueLineCount, 0, &queueLineCount);
+    }
+
+}
+
+uint32_t A3200Controller::queueCount()
+{
+    const uint8_t taskId = 1;
+
+    double queueCount = this->getTaskStatus(taskId, STATUSITEM_QueueLineCount);
+
+    return queueCount;
+}
+
+uint32_t A3200Controller::maxQueueSize()
+{
+    const uint8_t taskId = 1;
+
+    double queueCount = this->getTaskStatus(taskId, STATUSITEM_QueueLineCapacity);
+
+    return queueCount;
+}
+
+void A3200Controller::endTaskQueue(bool hard, const uint32_t timeOut, const uint8_t taskId)
+{
+    bool status = false;
+
+    if(hard) {
+        status = A3200ProgramStop(mHandle, (TASKID) taskId);
+    } else {
+        status = A3200ProgramStopAndWait(mHandle, (TASKID) taskId, timeOut);
+    }
+
+    if(!status) {
+        throw A3200Exception(this->getErrorString().c_str(), this->getErrorCode());
+    }
+}
+
+double A3200Controller::getTaskStatus(const uint8_t taskId, const uint32_t item)
+{
+    double value;
+
+    bool state = A3200StatusGetItem(mHandle, (TASKID) taskId, (STATUSITEM) item, 0, &value);
+
+    if(!state) {
+        throw A3200Exception(this->getErrorString().c_str(), this->getErrorCode());
+    }
+
+    return value;
+}
+
+double A3200Controller::getAxisStatus(Axis::Ptr axis, const uint32_t item)
+{
+    double value;
+    bool state = A3200StatusGetItem(mHandle, (AXISINDEX) axis->id(),  (STATUSITEM) item, 0, &value);
+
+    if(!state) {
+        throw A3200Exception(this->getErrorString().c_str(), this->getErrorCode());
+    }
+
+    return value;
 }
 
 double A3200Controller::getSingleDataSignal(Axis::Ptr axis, uint32_t dataSignal)
@@ -64,9 +147,13 @@ double A3200Controller::getSingleDataSignal(Axis::Ptr axis, uint32_t dataSignal)
 
     A3200DataCollectionConfigCreate(mHandle, &dcchandle);
 
+    // Remove existing signals from the collection
+    A3200DataCollectionConfigRemoveSignalAll(dcchandle);
+
     //DATASIGNAL_PositionCommand
     A3200DataCollectionConfigAddSignal(dcchandle, (DATASIGNAL) dataSignal, (AXISINDEX) axis->id(), 0);
 
+    // Collect one sample across (1ms)
     A3200DataCollectionConfigSetPeriod(dcchandle, 1);
 
     // the number of samples to collect
@@ -90,7 +177,8 @@ double A3200Controller::getSingleDataSignal(Axis::Ptr axis, uint32_t dataSignal)
 
 }
 
-Eigen::MatrixXd A3200Controller::getDataSignal(Axis::Ptr axis, std::vector<uint32_t> dataSignals, uint32_t numPoints)
+
+Eigen::MatrixXd A3200Controller::getDataSignal(Axis::Ptr axis, std::vector<uint32_t> dataSignals, uint32_t numPoints, uint32_t samplePeriod)
 {
     A3200DataCollectConfigHandle dcchandle = NULL;
     A3200_DATACOLLECTION_STATUS status;
@@ -105,17 +193,21 @@ Eigen::MatrixXd A3200Controller::getDataSignal(Axis::Ptr axis, std::vector<uint3
 
     A3200DataCollectionConfigCreate(mHandle, &dcchandle);
 
+    // Remove existing signals from the collection
+    A3200DataCollectionConfigRemoveSignalAll(dcchandle);
+
     //DATASIGNAL_PositionCommand
     //
     for(auto signal : dataSignals)
         A3200DataCollectionConfigAddSignal(dcchandle, (DATASIGNAL) signal, (AXISINDEX) axis->id(), 0);
 
-    A3200DataCollectionConfigSetPeriod(dcchandle, 1);
+    A3200DataCollectionConfigSetPeriod(dcchandle, samplePeriod);
 
     // the number of samples to collect
     A3200DataCollectionConfigSetSamples(dcchandle, numPoints);
     A3200DataCollectionStart(mHandle, dcchandle);
 
+    // Note: this is a blocking function, so it has very limited use in pratical applications
     // wait until every data point is collected
     while(pointsRetrieved < numPoints) {
             A3200DataCollectionGetStatus(mHandle, &status);
@@ -196,15 +288,6 @@ double A3200Controller::runCommand(const std::string &command, const uint8_t tas
     return value;
 }
 
-void A3200Controller::startTaskQueue(const uint8_t taskId)
-{
-    // TODO IMPLEMENT
-    bool state = A3200ProgramInitializeQueue(mHandle, (TASKID) taskId);
-
-    if(!state) {
-        throw A3200Exception(getErrorString().c_str(), getErrorCode());
-    }
-}
 
 void A3200Controller::stopProgram(const uint32_t timeout, const uint8_t taskId)
 {
@@ -364,12 +447,10 @@ void A3200Controller::home(Axis::Ptr axis, const uint8_t taskId)
 void A3200Controller::move(const std::vector<Axis::Ptr> &axes,  std::vector<double> distance, const double speed, const uint8_t taskId)
 {
     if(!mIsConnected)
-        return;
+        throw A3200Exception("Controller is not connected or initialised", 0);
 
-    if(axes.size() != distance.size()) {
-        // Todo raise exception
-        return;
-    }
+    if(axes.size() != distance.size())
+        throw A3200Exception("Number of axes and position components must match", 0);
 
     bool state;
 

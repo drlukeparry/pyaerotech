@@ -191,7 +191,13 @@ PYBIND11_MODULE(a3200, m) {
         .def("runCommand", &aerotech::A3200Controller::runCommand, "Executes a command",
                            py::arg("command"), py::arg("taskId"))
         .def("startTaskQueue", &aerotech::A3200Controller::startTaskQueue, "Starts a task queue to buffer commands for asynchronous behavior",
-                           py::arg("taskId"))
+                           py::arg("taskId") = 1)
+        .def("blockTaskQueue", &aerotech::A3200Controller::blockUntilQueueComplete, "Blocks the Python interpreter until the task queue is complete",
+                              py::arg("pollingTime") = 100 , py::arg("taskId") = 1)
+        .def("endTaskQueue", &aerotech::A3200Controller::endTaskQueue, "Ends a task queue to buffer commands for asynchronous behavior",
+                             py::arg("hard"), py::arg("timeout") = 1000 , py::arg("taskId") = 1)
+        .def_property_readonly("queueCount", &aerotech::A3200Controller::queueCount, "The current queue count")
+        .def_property_readonly("maximumQueueSize", &aerotech::A3200Controller::maxQueueSize, "Maximum queue size")
         .def("stopProgram", &aerotech::A3200Controller::stopProgram, "Instantly stops the program and optionally waits for axes to complete movement",
                              py::arg("timeout"), py::arg("taskId"))
         .def("criticalStart", &aerotech::A3200Controller::criticalStart, "Start a critical operation period",
@@ -248,11 +254,9 @@ PYBIND11_MODULE(a3200, m) {
                                    py::arg("idx"), py::arg("value"))
         .def("getSingleDataSignal", &aerotech::A3200Controller::getSingleDataSignal, "Captures immediately a single data signal for an axis",
                                     py::arg("axis"), py::arg("signal"))
-        .def("getDataSignal",(Eigen::MatrixXd(aerotech::A3200Controller::*)(Axis::Ptr, std::vector<uint32_t>, uint32_t))( &aerotech::A3200Controller::getDataSignal) , py::return_value_policy::copy,
-                              "Captures multiple signals and their occurances from a signle axis",
-                              py::arg("axis"), py::arg("signals"), py::arg("numPoints"));
-
-#endif
+        .def("getDataSignal",(Eigen::MatrixXd(aerotech::A3200Controller::*)(Axis::Ptr, std::vector<uint32_t>, uint32_t, uint32_t))( &aerotech::A3200Controller::getDataSignal) , py::return_value_policy::copy,
+                              "Captures multiple signals and their occurances from a signle axis, for a sample period",
+                              py::arg("axis"), py::arg("signals"), py::arg("numPoints"), py::arg("samplePeriod") = 1);
 
 #ifdef PROJECT_VERSION
     m.attr("__version__") = "PROJECT_VERSION";

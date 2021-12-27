@@ -17,7 +17,6 @@
 namespace aerotech
 {
 
-
 class AEROTECH_EXPORT A3200Controller
 {
 
@@ -44,11 +43,18 @@ public:
     void disconnect();
     bool isConnected() const { return mIsConnected; }
 
-    void runScript(const std::string &filename, const uint8_t taskId);
+    void runScript(const std::string &filename, const uint8_t taskId = 1);
 
-    double runCommand(const std::string &command, const uint8_t taskId);
-    void startTaskQueue(const uint8_t taskId);
+    double runCommand(const std::string &command, const uint8_t taskId = 1);
     void stopProgram(const uint32_t timeout, const uint8_t taskId);
+
+    /* Queue related commands */
+    void startTaskQueue(const uint8_t taskId = 1);
+    void blockUntilQueueComplete(const uint32_t pollingTime = 100, const uint8_t taskId = 1);
+    void endTaskQueue(bool hard = false, const uint32_t timeout = 1000, const uint8_t taskId = 1);
+    uint32_t queueCount();
+    uint32_t maxQueueSize();
+
 
     bool isProgramRunning();
 
@@ -57,13 +63,17 @@ public:
 
     double getDataSignal();
 
+    double getAxisStatus(Axis::Ptr axis, const uint32_t item);
+    double getTaskStatus(const uint8_t taskId, const uint32_t item);
+
     void setGlobalVariable(const uint32_t idx, std::vector<double> &value);
     void setGlobalVariable(const uint32_t idx, const double value);
 
     void setVariable(const std::string &str, std::vector<double> &value);
     void setVariable(const std::string &str, const double value);
 
-    Eigen::MatrixXd getDataSignal(Axis::Ptr axis,  std::vector<uint32_t> dataSignals, uint32_t numPoints);
+
+    Eigen::MatrixXd getDataSignal(Axis::Ptr axis,  std::vector<uint32_t> dataSignals, uint32_t numPoints, uint32_t samplePeriod = 1);
     double getSingleDataSignal(Axis::Ptr axis, uint32_t dataSignal);
 
 
@@ -95,8 +105,8 @@ public:
     std::vector<double> position(const std::vector<Axis::Ptr> &axes) const;
     double position(Axis::Ptr axis) const;
 
-    std::vector<double> velocity(const std::vector<Axis::Ptr> &axes, bool average) const;
-    double velocity(Axis::Ptr axis, bool average) const;
+    std::vector<double> velocity(const std::vector<Axis::Ptr> &axes, bool average = false) const;
+    double velocity(Axis::Ptr axis, bool average = false) const;
 
 
     // Set configuration
