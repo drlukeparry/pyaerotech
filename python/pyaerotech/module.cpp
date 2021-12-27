@@ -186,6 +186,8 @@ PYBIND11_MODULE(a3200, m) {
         .def("disconnect", &aerotech::A3200Controller::disconnect)
         .def("isConnected", &aerotech::A3200Controller::isConnected)
         .def("dwell", &aerotech::A3200Controller::dwell, "Dwells or waits for a period of time (seconds)")
+        .def("getLastError", &aerotech::A3200Controller::getErrorString, "Get the last error string reported by the controller")
+        .def("getLastErrorCode", &aerotech::A3200Controller::getErrorCode, "Get the last error code reported by the controller")
         .def("runScript", &aerotech::A3200Controller::runScript, "Runs a script from a specified filename",
                           py::arg("filename"), py::arg("taskId"))
         .def("runCommand", &aerotech::A3200Controller::runCommand, "Executes a command",
