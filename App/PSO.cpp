@@ -99,8 +99,8 @@ bool PSO::isArmed() const
 
 bool PSO::isEnabled() const
 {
-    return mIsEnabled;
-    //return mAxis->controller()->getSingleDataSignal(mAxis, DATASIGNAL_PSOStatus);
+    //return mIsEnabled;
+    return mAxis->controller()->getSingleDataSignal(mAxis, DATASIGNAL_PSOStatus);
 }
 
 uint32_t PSO::psoCounter(const uint8_t counter)
