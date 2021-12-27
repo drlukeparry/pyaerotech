@@ -69,6 +69,7 @@ public:
     void setFireContiniously(const uint8_t taskId = 1);
     
     void setWindowMask(std::vector<double> mask, EdgeMode edgeMode,  const uint32_t arrayIdx, bool hard = false,  const uint8_t taskId = 1);
+    void setWindowRange(const uint32_t low, const uint32_t high, const uint8_t taskId = 1);
 
     bool isArmed() const;
     bool isEnabled() const;

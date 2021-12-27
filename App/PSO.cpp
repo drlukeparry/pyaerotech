@@ -184,7 +184,14 @@ void PSO::setFireDistance(const double distance, const uint8_t taskId)
 void PSO::clearFireDistance(const uint8_t taskId)
 {
 
-void PSO::setWindowMask(std::vector<double> mask, EdgeMode edgeMode,  const uint32_t arrayIdx, bool hard, const uint8_t taskId)
+    bool status = A3200PSODistanceOff(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id());
+
+    if(!status) {
+        throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
+    }
+}
+
+
 void PSO::setFireContiniously(const uint8_t taskId)
 {
 
@@ -195,6 +202,24 @@ void PSO::setFireContiniously(const uint8_t taskId)
     }
 
 }
+
+void PSO::setWindowRange(const uint32_t low, const uint32_t high, const uint8_t taskId)
+{
+
+    if(std::fabs(low) > 2147483647 || std::fabs(high) > 2147483647) {
+         throw A3200Exception("Window range is outside limits", 0);
+    }
+
+    const uint8_t windowNum = 1;
+    bool status = A3200PSOWindowRange(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowNum, low, high);
+
+    if(!status) {
+        throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
+    }
+
+}
+void PSO::setWindowMask(std::vector<double> mask, EdgeMode edgeMode, const uint32_t arrayIdx, bool hard, const uint8_t taskId)
+{
     // note for HpE drive contorller, max elements in the PSO FIFO buffer is 2,097,152
     // and for the Cp Drive Controller the max elements is 262,144
 

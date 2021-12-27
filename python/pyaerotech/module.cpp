@@ -111,6 +111,8 @@ PYBIND11_MODULE(a3200, m) {
         .def("setWindowMask", &aerotech::PSO::setWindowMask, "Sets the PSO to use a Window Mask for firing by passing an array",
                               py::arg("mask"), py::arg("edgeMode"), py::arg("arrayIdx"), py::arg("hard"), py::arg("taskId") = 1
                               )
+        .def("setWindowRange", &aerotech::PSO::setWindowRange, "Sets the PSO fixed window range to fire in",
+                              py::arg("low"), py::arg("high"), py::arg("taskId") = 1)
         .def_property_readonly("axis", &aerotech::PSO::axis, "The axis the PSO is operating on")
         .def_property_readonly("isArmed", &aerotech::PSO::isArmed, "Armed status of the PSO")
         .def_property_readonly("windowArrayIndexLocation", &aerotech::PSO::windowArrayIndexLocation, "Index of location axis")
