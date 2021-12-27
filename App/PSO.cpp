@@ -221,15 +221,12 @@ void PSO::setWindowMask(std::vector<double> mask, EdgeMode edgeMode,  const uint
     if(!status) {
         throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
     }
-
 }
-
-
 
 void PSO::enable(const uint8_t taskId)
 {
     // A3200PSOWindowOn
-    bool status = A3200PSOWindowOn(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), 1);
+    bool status = status = A3200PSOControl(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), PSOMODE_On);
 
     if(!status) {
         throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
@@ -241,7 +238,36 @@ void PSO::enable(const uint8_t taskId)
 void PSO::disable(const uint8_t taskId)
 {
     // A3200PSOWindowOff
-    bool status = A3200PSOWindowOff(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), 1);
+    bool status = status = A3200PSOControl(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), PSOMODE_Off);
+
+    if(!status) {
+        throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
+    } else {
+        mIsEnabled = false;
+    }
+}
+
+void PSO::enableWindow(const uint8_t taskId)
+{
+    // A3200PSOWindowOn
+    const uint8_t windowMode = 1;
+
+    bool status = A3200PSOWindowOn(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowMode);
+
+    if(!status) {
+        throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
+    } else {
+        mIsEnabled = true;
+    }
+}
+
+void PSO::disableWindow(const uint8_t taskId)
+{
+    // A3200PSOWindowOff
+
+    const uint8_t windowMode = 1;
+
+    bool status = A3200PSOWindowOff(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowMode);
 
     if(!status) {
         throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());

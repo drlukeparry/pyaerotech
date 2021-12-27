@@ -83,6 +83,11 @@ PYBIND11_MODULE(a3200, m) {
                        py::arg("taskId") = 1)
         .def("disable", &aerotech::PSO::disable, "Disables the PSO Mode on the Axis",
                         py::arg("taskId") = 1)
+        .def("enableWindow", &aerotech::PSO::enableWindow, "Enables the PSO Windw Mode on the Axis",
+                       py::arg("taskId") = 1)
+        .def("disableWindow", &aerotech::PSO::disableWindow, "Disables the PSO Window Mode on the Axis",
+                        py::arg("taskId") = 1)
+
         .def("reset",  &aerotech::PSO::reset, "Resets the counter registers on the Axis",
                        py::arg("hard"), py::arg("taskId") = 1)
         .def("arm", &aerotech::PSO::arm, "Arms the PSO firing on the Axis",

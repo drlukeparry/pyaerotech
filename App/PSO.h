@@ -75,8 +75,10 @@ public:
     uint32_t windowArrayIndexLocation(const uint8_t windowNumber = 1);
 
     void arm(const uint8_t taskId = 1); // A3200PSOWindowOn
-    void enable(const uint8_t taskId = 1); // A3200PSOWindowOn 
-    void disable(const uint8_t taskId = 1); // A3200PSOWindowOff 
+    void enableWindow(const uint8_t taskId = 1); // A3200PSOWindowOn
+    void disableWindow(const uint8_t taskId = 1); // A3200PSOWindowOff
+    void enable(const uint8_t taskId = 1); // A3200PSOWindowOn
+    void disable(const uint8_t taskId = 1); // A3200PSOWindowOff
     void reset(bool hard = true, const uint8_t taskId = 1);
     void disarm(const uint8_t taskId = 1);
     
