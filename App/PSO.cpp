@@ -91,7 +91,6 @@ void PSO::setMode(const PSOMode mode)
 
 }
 
-
 bool PSO::isArmed() const
 {
     return mIsArmed;
@@ -136,6 +135,7 @@ uint32_t PSO::windowArrayIndexLocation(const uint8_t windowNumber)
 }
 
 
+
 void PSO::setOutput(const uint8_t pin, const uint8_t mode, uint8_t taskId)
 {
     // Note - mode is zero     PSOOUTPUT X CONTROL 0 1
@@ -170,6 +170,10 @@ void PSO::setPulseDelayOnly(const double totalTime, const double onTime, const d
 // PSODISTANCE X FIXED %d
 void PSO::setFireDistance(const double distance, const uint8_t taskId)
 {
+    if(distance < 1e-6) {
+        throw A3200Exception("Fire distance should be greater than zero", 0);
+    }
+
     bool status = A3200PSODistanceFixed(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), distance);
 
     if(!status) {
@@ -177,9 +181,20 @@ void PSO::setFireDistance(const double distance, const uint8_t taskId)
     }
 }
 
+void PSO::clearFireDistance(const uint8_t taskId)
+{
 
 void PSO::setWindowMask(std::vector<double> mask, EdgeMode edgeMode,  const uint32_t arrayIdx, bool hard, const uint8_t taskId)
+void PSO::setFireContiniously(const uint8_t taskId)
 {
+
+    bool status = A3200PSOControl(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), PSOMODE_FireContinuous);
+
+    if(!status) {
+        throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
+    }
+
+}
     // note for HpE drive contorller, max elements in the PSO FIFO buffer is 2,097,152
     // and for the Cp Drive Controller the max elements is 262,144
 

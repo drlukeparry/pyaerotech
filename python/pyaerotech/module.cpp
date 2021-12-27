@@ -94,7 +94,11 @@ PYBIND11_MODULE(a3200, m) {
                     py::arg("taskId") = 1)
         .def("disarm", &aerotech::PSO::disarm, "Disarms the PSO firing on the Axis",
                        py::arg("taskId") = 1)
-        .def("setFireDistance", &aerotech::PSO::setFireDistance, "Sets the PSO to fire at a fixed distance intveral",
+        .def("setFireContiniously", &aerotech::PSO::setFireContiniously, "Arms the PSO to fire continiously",
+                                    py::arg("taskId") = 1)
+        .def("setFireDistance", &aerotech::PSO::clearFireDistance, "Clear the fire-distance for PSO to fire",
+                                py::arg("taskId") = 1)
+        .def("clearFireDistance", &aerotech::PSO::setFireDistance, "Sets the PSO to fire at a fixed distance intveral",
                                 py::arg("distance"), py::arg("taskId") = 1)
         .def("setOutput", &aerotech::PSO::setOutput, "Sets the output options for the PSO",
                          py::arg("pin") = 1, py::arg("mode") = 1, py::arg("taskId") = 1)

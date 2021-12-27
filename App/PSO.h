@@ -65,7 +65,8 @@ public:
     
     // PSODISTANCE X FIXED %d
     void setFireDistance(const double distance, const uint8_t taskId = 1);
-    
+    void clearFireDistance(const uint8_t taskId = 1);
+    void setFireContiniously(const uint8_t taskId = 1);
     
     void setWindowMask(std::vector<double> mask, EdgeMode edgeMode,  const uint32_t arrayIdx, bool hard = false,  const uint8_t taskId = 1);
 
