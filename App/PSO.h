@@ -49,7 +49,7 @@ public:
     //# Configure the the x-axis encoder for single axis tracking
     //PSOTRACK X INPUT 0
     // PSOWINDOW X 1 INPUT 0 INVERT - first axis for tracking
-    void setEncoderAxis(int32_t encoderId, int32_t encoderId2 = -1,
+    void setEncoderAxis(int32_t encoderId, int32_t encoderId2 = -1, int32_t encoderId3 = -1,
                         bool invert = false, uint8_t taskId = 1);
     void setMode(const PSOMode mode);
     

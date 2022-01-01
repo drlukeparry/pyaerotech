@@ -52,7 +52,7 @@ void PSO::reset(bool hard, const uint8_t taskId)
 
 }
 
-void PSO::setEncoderAxis(int32_t encoderId, int32_t encoderId2,
+void PSO::setEncoderAxis(int32_t encoderId, int32_t encoderId2, int32_t encoderId3,
                     bool invert, uint8_t taskId)
 {
 
@@ -60,7 +60,10 @@ void PSO::setEncoderAxis(int32_t encoderId, int32_t encoderId2,
     //PSOTRACK X INPUT 0
 
     bool status = false;
-    if(encoderId2 > 0) {
+
+    if(encoderId3 > -1) {
+        status = A3200PSOTrackInputInput2Input3(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), encoderId, encoderId2, encoderId3);
+    } else if(encoderId2 > -1) {
         status = A3200PSOTrackInputInput2(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), encoderId, encoderId2);
     } else {
         // Use only a single axis for tracking
@@ -256,7 +259,7 @@ void PSO::setWindowMask(std::vector<double> mask, EdgeMode edgeMode, const uint3
     }
 
     const uint32_t windowNumber = 1;
-    status = A3200PSOWindowRangeArray(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowNumber, idx, mask.size(), 1);
+    status = A3200PSOWindowRangeArray(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowNumber, 0, mask.size(), 1);
 
     if(!status) {
         throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());

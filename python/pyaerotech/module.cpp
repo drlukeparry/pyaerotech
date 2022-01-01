@@ -54,7 +54,6 @@ PYBIND11_MODULE(a3200, m) {
     .value("Both", EdgeMode::BOTH)
     .export_values();
 
-
     py::enum_<aerotech::RampMode>(m, "RampMode")
     .value("Rate", RampMode::RATE)
     .value("Time", RampMode::TIME)
@@ -107,7 +106,7 @@ PYBIND11_MODULE(a3200, m) {
         .def("setPulseCyclesOnly", &aerotech::PSO::setPulseCyclesOnly, "Sets the PSO to use the pulse cycles only mode",
                                    py::arg("totalTime"), py::arg("onTime"), py::arg("cycles"), py::arg("taskId") = 1)
         .def("setEncoderAxis", &aerotech::PSO::setEncoderAxis, "Set the primary and secondary encoder axes to use as input for the axis",
-                               py::arg("encoderId"), py::arg("encoderID") = -1, py::arg("invert") = false, py::arg("taskId") = 1)
+                               py::arg("encoderId"), py::arg("encoderId2") = -1, py::arg("encoderId3") = -1, py::arg("invert") = false, py::arg("taskId") = 1)
         .def("setWindowMask", &aerotech::PSO::setWindowMask, "Sets the PSO to use a Window Mask for firing by passing an array",
                               py::arg("mask"), py::arg("edgeMode"), py::arg("arrayIdx"), py::arg("hard"), py::arg("taskId") = 1
                               )
