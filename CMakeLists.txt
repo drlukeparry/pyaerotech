@@ -55,6 +55,13 @@ set(CPP_FILESYSTEM
     External/filesystem
 )
 
+## A replacement library for std::Format
+set(CPP_FMT
+    External/fmt/include
+)
+
+add_definitions("-DFMT_HEADER_ONLY=1")
+
 # Set the Aerotech Include Libraries
 set(AEROTECH_A3200_LIB_DIR
     External/a3200/Lib64
@@ -81,6 +88,7 @@ include_directories(
     ${CMAKE_BINARY_DIR}
     ${EIGEN3_INCLUDE_DIR}
     ${CPP_FILESYSTEM}
+    ${CPP_FMT}
     ${AEROTECH_A3200_INCLUDE_DIR}
 )
 

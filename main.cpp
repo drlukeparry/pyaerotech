@@ -1,8 +1,11 @@
 #include <math.h>
 #include <iostream>
+#include <fmt/format.h>
 
 #include <App/Axis.h>
 #include <A3200.h>
+
+using namespace fmt;
 
 void printerror();
 
@@ -15,6 +18,9 @@ void printerror() {
 int main(int argc, char *argv[])
 {
 
+    std::string s = fmt::format("The answer is {} \n", 42);
+
+    std::cout << s;
 
     // Handle to give access to A3200
     A3200Handle handle = nullptr;
