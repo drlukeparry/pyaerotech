@@ -37,6 +37,22 @@ PYBIND11_MODULE(a3200, m) {
 
     )pbdoc";
 
+    py::enum_<aerotech::AxisStatus>(m, "AxisStatus")
+    .value("Home", AxisStatus::HOME)
+    .value("Profiling", AxisStatus::PROFILING)
+    .value("WaitDone", AxisStatus::WAITDONE)
+    .value("CommandValid", AxisStatus::COMMAND_VALID)
+    .value("Enabling", AxisStatus::ENABLING)
+    .value("Jogging", AxisStatus::JOGGING)
+    .value("JogGenerating", AxisStatus::JOG_GENERATING)
+    .value("MoveDone", AxisStatus::MOVE_DONE)
+    .value("MotionClamped", AxisStatus::MOTION_CLAMPED)
+    .value("MotionBlocked", AxisStatus::MOTION_BLOCKED)
+    .value("NotVirtual", AxisStatus::NOT_VIRTUAL)
+    .value("BacklashActive", AxisStatus::BACKLASH_ACTIVE)
+
+    .export_values();
+
     py::enum_<aerotech::AxisId>(m, "AxisId")
     .value("X", AxisId::X)
     .value("Y", AxisId::Y)
