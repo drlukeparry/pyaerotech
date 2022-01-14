@@ -8,6 +8,7 @@
 #include <filesystem/fwd.h>
 #include <filesystem/resolver.h>
 #include <filesystem/path.h>
+#include <fmt/format.h>
 
 #include "Controller.h"
 #include "Exception.h"
@@ -274,12 +275,17 @@ void A3200Controller::runScript(const std::string &filename, const uint8_t taskI
 }
 
 
-double A3200Controller::runCommand(const std::string &command, const uint8_t taskId)
+double A3200Controller::runCommand(const std::string &command, const bool returnValue, const uint8_t taskId)
 {
     // TODO IMPLEMENT
-    double value = 0.0;
+    double value = 1.0;
 
-    bool state = A3200CommandExecute(mHandle, (TASKID) taskId, command.c_str(), &value);
+    bool state = false;
+
+    if(returnValue)
+        state = A3200CommandExecute(mHandle, (TASKID) taskId, command.c_str(), &value);
+    else
+        state = A3200CommandExecute(mHandle, (TASKID) taskId, command.c_str(), nullptr);
 
     if(!state) {
         throw A3200Exception(getErrorString().c_str(), getErrorCode());
@@ -309,17 +315,18 @@ bool A3200Controller::isProgramRunning()
 {
     //double value;
     //A3200StatusGetItem(handle, TASKID_01, STATUSITEM_, 0, &value);
-    return false;    
+    return false;
 }
 
 void A3200Controller::dwell(const double time)
 {
     double result;
     char buffer[50];
-    
-    std::sprintf (buffer, "DWELL %.3f \n", time);
-    
-    bool state = A3200CommandExecute(mHandle, TASKID_Library, buffer, &result);
+
+    std::string cmd = fmt::format("DWELL {:.3f} \n", time);
+    std::sprintf(buffer, "DWELL %.3f \n", time);
+
+    bool state = A3200CommandExecute(mHandle, TASKID_Library, cmd.c_str(), nullptr);
 
     if(!state) {
         throw A3200Exception(getErrorString().c_str(), getErrorCode());
@@ -330,14 +337,21 @@ void A3200Controller::criticalStart(double time)
 {
     double result;
     char buffer[50];
-    
+
+    std::string cmd;
+
     if(time > 1e-6) {
+        cmd = fmt::format("CRITICAL START {:.3f} \n", time);
         std::sprintf(buffer, "CRITICAL START %.3f \n", time);
     } else {
+        cmd = fmt::format("CRITICAL START \n");
         std::sprintf(buffer, "CRITICAL START\n");
     }
-    
-    bool state = A3200CommandExecute(mHandle, TASKID_Library, buffer, &result);
+
+
+    std::string s = fmt::format("The answer is {} \n", 42);
+
+    bool state = A3200CommandExecute(mHandle, TASKID_Library, cmd.c_str(), nullptr);
 
     if(!state) {
         throw A3200Exception(getErrorString().c_str(), getErrorCode());
@@ -349,10 +363,11 @@ void A3200Controller::criticalEnd()
 {
     double result;
     char buffer[50];
-    
+
     std::sprintf(buffer, "CRITICAL END \n", time);
-    
-    bool state = A3200CommandExecute(mHandle, TASKID_Library, buffer, &result);
+    std::string cmd = fmt::format("CRITICAL END \n");
+
+    bool state = A3200CommandExecute(mHandle, TASKID_Library, cmd.c_str(), nullptr);
 
     if(!state) {
         throw A3200Exception(getErrorString().c_str(), getErrorCode());
@@ -444,7 +459,7 @@ void A3200Controller::home(Axis::Ptr axis, const uint8_t taskId)
     this->home(std::vector<Axis::Ptr> {axis}, taskId);
 }
 
-void A3200Controller::move(const std::vector<Axis::Ptr> &axes,  std::vector<double> distance, const double speed, const uint8_t taskId)
+void A3200Controller::move(const std::vector<Axis::Ptr> &axes, std::vector<double> distance, const double speed, const uint8_t taskId)
 {
     if(!mIsConnected)
         throw A3200Exception("Controller is not connected or initialised", 0);
@@ -568,12 +583,12 @@ std::vector<double> A3200Controller::position(const std::vector<Axis::Ptr> &axes
     std::vector<double> valueList;
     std::vector<uint32_t> itemExtraList;
 
-    for(auto axis : axes)
+    for(auto axis : axes) {
         axisList.push_back(axis->id());
         statusList.push_back(STATUSITEM_PositionFeedback);
         valueList.push_back(0.0);
         itemExtraList.push_back(0);
-
+    }
 
     /*
     WORD itemAxisTaskIndexArray[] = { AXISINDEX_00, AXISINDEX_00, TASKID_01 };
@@ -619,12 +634,12 @@ std::vector<double> A3200Controller::velocity(const std::vector<Axis::Ptr> &axes
     std::vector<double> valueList;
     std::vector<uint32_t> itemExtraList;
 
-    for(auto axis : axes)
+    for(auto axis : axes) {
         axisList.push_back(axis->id());
         statusList.push_back((average) ? STATUSITEM_VelocityFeedbackAverage : STATUSITEM_VelocityFeedback);
         valueList.push_back(0.0);
         itemExtraList.push_back(0);
-
+    }
 
     /*
     WORD itemAxisTaskIndexArray[] = { AXISINDEX_00, AXISINDEX_00, TASKID_01 };
@@ -658,7 +673,7 @@ double A3200Controller::velocity(Axis::Ptr axis, bool average) const
 
 AXISMASK A3200Controller::getAxisMask(const std::vector<Axis::Ptr> &axes)
 {
-    uint32_t mask;
+    uint32_t mask = 0;
     for(auto axis : axes)
         mask |= axis->axisMask();
 
@@ -701,3 +716,11 @@ void A3200Controller::setGlobalVariable(const uint32_t idx, std::vector<double> 
     }
 }
 
+void A3200Controller::setVariable(const std::string &str, const double value, uint8_t taskId)
+{
+    bool state = A3200VariableSetValueByName(mHandle, (TASKID) taskId, str.c_str(), value);
+
+    if(!state) {
+        throw A3200Exception(getErrorString().c_str(), getErrorCode());
+    }
+}

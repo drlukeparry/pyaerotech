@@ -45,7 +45,7 @@ public:
 
     void runScript(const std::string &filename, const uint8_t taskId = 1);
 
-    double runCommand(const std::string &command, const uint8_t taskId = 1);
+    double runCommand(const std::string &command, const bool retrunValue = false, const uint8_t taskId = 1);
     void stopProgram(const uint32_t timeout, const uint8_t taskId);
 
     /* Queue related commands */
@@ -69,8 +69,7 @@ public:
     void setGlobalVariable(const uint32_t idx, std::vector<double> &value);
     void setGlobalVariable(const uint32_t idx, const double value);
 
-    void setVariable(const std::string &str, std::vector<double> &value);
-    void setVariable(const std::string &str, const double value);
+    void setVariable(const std::string &str, const double value, uint8_t taskId = 1);
 
 
     Eigen::MatrixXd getDataSignal(Axis::Ptr axis,  std::vector<uint32_t> dataSignals, uint32_t numPoints, uint32_t samplePeriod = 1);

@@ -277,6 +277,8 @@ PYBIND11_MODULE(a3200, m) {
                                    py::arg("idx"), py::arg("value"))
         .def("setGlobalVariable", (void(aerotech::A3200Controller::*)(uint32_t, double))(&aerotech::A3200Controller::setGlobalVariable), "Set the global variable at index (idx) with value",
                                    py::arg("idx"), py::arg("value"))
+        .def("setVariable", &aerotech::A3200Controller::setVariable, "Set the global variable at index (idx) with value",
+                             py::arg("str"), py::arg("value"), py::arg("taskId") = 1)
         .def("getSingleDataSignal", &aerotech::A3200Controller::getSingleDataSignal, "Captures immediately a single data signal for an axis",
                                     py::arg("axis"), py::arg("signal"))
         .def("getDataSignal",(Eigen::MatrixXd(aerotech::A3200Controller::*)(Axis::Ptr, std::vector<uint32_t>, uint32_t, uint32_t))( &aerotech::A3200Controller::getDataSignal) , py::return_value_policy::copy,

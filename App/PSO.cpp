@@ -138,7 +138,6 @@ uint32_t PSO::windowArrayIndexLocation(const uint8_t windowNumber)
 }
 
 
-
 void PSO::setOutput(const uint8_t pin, const uint8_t mode, uint8_t taskId)
 {
     // Note - mode is zero     PSOOUTPUT X CONTROL 0 1
@@ -158,7 +157,6 @@ void PSO::setPulseCyclesOnly(const double totalTime, const double onTime, const 
         throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
     }
 }
-
 
 void PSO::setPulseDelayOnly(const double totalTime, const double onTime, const double delayTime,
                             const uint8_t taskId)
