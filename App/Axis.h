@@ -109,7 +109,6 @@ protected:
     
     double mDefaultSpeed;
     AxisState mState;
-    bool mIsHomed;
     std::string mLabel;
 
     std::shared_ptr<A3200Controller> mController;

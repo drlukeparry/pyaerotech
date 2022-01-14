@@ -22,7 +22,8 @@ Axis::Axis() :  mState(AxisState::DISABLED),
 
 Axis::Axis(A3200Controller::Ptr controller, uint16_t axis) : mId(axis),
                                                              mState(AxisState::DISABLED),
-                                                             mController(controller)
+                                                             mController(controller),
+                                                             mDefaultSpeed(100)
 {
 
 }
@@ -161,7 +162,7 @@ void Axis::moveRel(const double distance, const double speed, const uint8_t task
     if(speed > 1e-6){
         state = A3200MotionMoveInc(mController->handle(), (TASKID) taskId, (AXISINDEX) mId, distance, speed);
     } else {
-        state = A3200MotionLinear(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask() , &value);
+        state = A3200MotionMoveInc(mController->handle(), (TASKID) taskId, (AXISINDEX) mId, distance, mDefaultSpeed);
     }
 
     if(!state) {
