@@ -104,16 +104,16 @@ PYBIND11_MODULE(a3200, m) {
                         py::arg("taskId") = 1)
 
         .def("reset",  &aerotech::PSO::reset, "Resets the counter registers on the Axis",
-                       py::arg("hard"), py::arg("taskId") = 1)
+                       py::arg("hard") = true, py::arg("taskId") = 1)
         .def("arm", &aerotech::PSO::arm, "Arms the PSO firing on the Axis",
                     py::arg("taskId") = 1)
         .def("disarm", &aerotech::PSO::disarm, "Disarms the PSO firing on the Axis",
                        py::arg("taskId") = 1)
         .def("setFireContiniously", &aerotech::PSO::setFireContiniously, "Arms the PSO to fire continiously",
                                     py::arg("taskId") = 1)
-        .def("setFireDistance", &aerotech::PSO::clearFireDistance, "Clear the fire-distance for PSO to fire",
-                                py::arg("taskId") = 1)
-        .def("clearFireDistance", &aerotech::PSO::setFireDistance, "Sets the PSO to fire at a fixed distance intveral",
+        .def("clearFireDistance", &aerotech::PSO::clearFireDistance, "Clear the fire-distance for PSO to fire",
+                                  py::arg("taskId") = 1)
+        .def("setFireDistance", &aerotech::PSO::setFireDistance, "Sets the PSO to fire at a fixed distance intveral",
                                 py::arg("distance"), py::arg("taskId") = 1)
         .def("setOutput", &aerotech::PSO::setOutput, "Sets the output options for the PSO",
                          py::arg("pin") = 1, py::arg("mode") = 1, py::arg("taskId") = 1)
@@ -124,13 +124,14 @@ PYBIND11_MODULE(a3200, m) {
         .def("setEncoderAxis", &aerotech::PSO::setEncoderAxis, "Set the primary and secondary encoder axes to use as input for the axis",
                                py::arg("encoderId"), py::arg("encoderId2") = -1, py::arg("encoderId3") = -1, py::arg("invert") = false, py::arg("taskId") = 1)
         .def("setWindowMask", &aerotech::PSO::setWindowMask, "Sets the PSO to use a Window Mask for firing by passing an array",
-                              py::arg("mask"), py::arg("edgeMode"), py::arg("arrayIdx"), py::arg("hard"), py::arg("taskId") = 1
-                              )
+                              py::arg("mask"), py::arg("edgeMode"), py::arg("arrayIdx"), py::arg("hard"), py::arg("taskId") = 1)
+        .def("windowArrayIndexLocation", &aerotech::PSO::windowArrayIndexLocation, "Index of location axis",
+                                         py::arg("window") = 1)
         .def("setWindowRange", &aerotech::PSO::setWindowRange, "Sets the PSO fixed window range to fire in",
                               py::arg("low"), py::arg("high"), py::arg("taskId") = 1)
         .def_property_readonly("axis", &aerotech::PSO::axis, "The axis the PSO is operating on")
         .def_property_readonly("isArmed", &aerotech::PSO::isArmed, "Armed status of the PSO")
-        .def_property_readonly("windowArrayIndexLocation", &aerotech::PSO::windowArrayIndexLocation, "Index of location axis")
+
         .def_property_readonly("axis", &aerotech::PSO::isArmed, "Armed status of the PSO")
         .def("psoCounter", &aerotech::PSO::psoCounter, "The current value of the PSO Counter for the Window",
                            py::arg("windowNumber"));
@@ -206,13 +207,14 @@ PYBIND11_MODULE(a3200, m) {
         .def("reset",  &aerotech::A3200Controller::reset)
         .def("disconnect", &aerotech::A3200Controller::disconnect)
         .def("isConnected", &aerotech::A3200Controller::isConnected)
-        .def("dwell", &aerotech::A3200Controller::dwell, "Dwells or waits for a period of time (seconds)")
+        .def("dwell", &aerotech::A3200Controller::dwell, "Dwells or waits for a period of time (seconds)",
+                       py::arg("time"))
         .def("getLastError", &aerotech::A3200Controller::getErrorString, "Get the last error string reported by the controller")
         .def("getLastErrorCode", &aerotech::A3200Controller::getErrorCode, "Get the last error code reported by the controller")
         .def("runScript", &aerotech::A3200Controller::runScript, "Runs a script from a specified filename",
-                          py::arg("filename"), py::arg("taskId"))
+                          py::arg("filename"), py::arg("taskId") = 1)
         .def("runCommand", &aerotech::A3200Controller::runCommand, "Executes a command",
-                           py::arg("command"), py::arg("taskId"))
+                           py::arg("command"), py::arg("returnValue") = false, py::arg("taskId") = 1)
         .def("startTaskQueue", &aerotech::A3200Controller::startTaskQueue, "Starts a task queue to buffer commands for asynchronous behavior",
                            py::arg("taskId") = 1)
         .def("blockTaskQueue", &aerotech::A3200Controller::blockUntilQueueComplete, "Blocks the Python interpreter until the task queue is complete",
