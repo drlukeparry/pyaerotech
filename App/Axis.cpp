@@ -41,20 +41,17 @@ uint32_t Axis::axisMask() const
 
 void Axis::enable(const uint8_t taskId)
 {
-    this->mController->enable(Ptr(this), taskId);
-    //A3200MotionEnable(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask() );
+    A3200MotionEnable(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask() );
 }
 
 void Axis::disable(const uint8_t taskId)
 {
-    this->mController->disable(Ptr(this), taskId);
-    //A3200MotionDisable(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask());
+    A3200MotionDisable(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask());
 }
 
 void Axis::abort()
 {
-    this->mController->abort(Ptr(this));
-    //A3200MotionAbort(mController->handle(), (AXISMASK) axisMask());
+    A3200MotionAbort(mController->handle(), (AXISMASK) axisMask());
 }
 
 void Axis::acknowlegeFault(const uint8_t taskId)
@@ -180,16 +177,12 @@ void Axis::setDefaultSpeed(double speed)
 
 void Axis::wait(uint64_t timeout, bool inPosition)
 {
-    this->mController->wait(Ptr(this), timeout, inPosition);
-
-#if 0
     WAITOPTION waitOption = WAITOPTION_InPosition;
 
     if(!inPosition)
         waitOption = WAITOPTION_MoveDone;
 
     A3200MotionWaitForMotionDone(mController->handle(), (AXISMASK) axisMask(), waitOption, timeout, NULL);
-#endif
 }
 
 double Axis::position()
@@ -221,45 +214,42 @@ double Axis::getStatus(const STATUSITEM &item)
 
 void Axis::setRampMode(const RampMode rampMode, const uint8_t taskId)
 {
-    this->mController->setRampMode(Ptr(this), rampMode, taskId);
-
-    //A3200MotionSetupRampModeAxis(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask(), (RAMPMODE) rampMode);
+    A3200MotionSetupRampModeAxis(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask(), (RAMPMODE) rampMode);
 }
 
 void Axis::setRampRate(const double rampRate, const uint8_t taskId)
 {
-    this->mController->setRampRate(Ptr(this), rampRate, taskId);
-
-#if 0
     double value = rampRate;
     A3200MotionSetupRampRateAccelAxis(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask(), &value);
-#endif
 }
 
 /*
  * Input and Output related commands
  */
-void Axis::setDigitalPin(uint64_t pin, bool state, const uint8_t taskId)
+void Axis::setDigitalOutputPin(uint64_t pin, bool state, const uint8_t taskId)
 {
-    uint32_t value = state;
-    bool status = A3200IODigitalOutput(mController->handle(), (TASKID) taskId, 0, (AXISINDEX) mId, value);
+    bool status = A3200IODigitalOutputBit(mController->handle(), (TASKID) taskId, pin, (AXISINDEX) mId, state);
 
     if(!status) {
         throw A3200Exception(mController->getErrorString().c_str(), mController->getErrorCode());
     }
 }
 
-bool Axis::digitalPin(uint64_t pin, const uint8_t taskId)
+bool Axis::digitalOutputPin(uint64_t pin, const uint8_t taskId)
 {
-    uint32_t value;
 
-    bool status = A3200IODigitalInput(mController->handle(), (TASKID) taskId, pin, (AXISINDEX) mId, (DWORD *) &value);
+    uint32_t pinBit = (1 << pin);
 
-    if(!status) {
-        throw A3200Exception(mController->getErrorString().c_str(), mController->getErrorCode());
-    }
+    uint32_t digitalOutput = this->digitalOutput();
 
-    return value;
+    return digitalOutput & pinBit;
+}
+
+uint32_t Axis::digitalOutput()
+{
+    // AXISSTATUS_Enabling
+     uint32_t digitalOutput = this->getStatus(STATUSITEM_DigitalOutput);
+     return digitalOutput;
 }
 
 void Axis::setAnalogPin(const uint64_t pin, const double value, const uint8_t taskId)
