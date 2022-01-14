@@ -148,17 +148,23 @@ PYBIND11_MODULE(a3200, m) {
         .def("setRampMode", &aerotech::Axis::setRampMode, "Sets the ramp mode for the axis",
                             py::arg("mpde"), py::arg("taskId") = 1)
 
-        .def("setDigitalPin", &aerotech::Axis::setDigitalPin, "Sets the digital output of the pin",
+        .def("setDigitalOutputPin", &aerotech::Axis::setDigitalOutputPin, "Sets the digital output of the pin",
                               py::arg("pin"), py::arg("state"), py::arg("taskId") = 1)
-        .def("digitalPin", &aerotech::Axis::digitalPin, "Gets the digital input signal from a selected pin",
+        .def("digitalOutputPin", &aerotech::Axis::digitalOutputPin, "Gets the digital input signal from a selected pin",
                            py::arg("pin"), py::arg("taskId") = 1)
+
         .def("setAnalogPin", &aerotech::Axis::setAnalogPin, "Sets the analog output of the pin",
                              py::arg("pin"), py::arg("value"), py::arg("taskId") = 1)
         .def("analogPin", &aerotech::Axis::analogPin, "Gets the analog input signal from a selected pin",
                           py::arg("pin"), py::arg("taskId") = 1)
-
+        .def_property_readonly("digitalOutput", &aerotech::Axis::digitalOutput)
+        .def_property_readonly("status", &aerotech::Axis::status)
+        .def_property_readonly("driveStatus", &aerotech::Axis::driveStatus)
         .def_property_readonly("controller", &aerotech::Axis::controller, "The controller assigned to the axis")
         .def_property_readonly("isEnabled", &aerotech::Axis::isEnabled)
+        .def_property_readonly("isEnabling", &aerotech::Axis::isEnabling)
+        .def_property_readonly("inMotion", &aerotech::Axis::inMotion)
+        .def_property_readonly("inPosition", &aerotech::Axis::inPosition)
         .def_property_readonly("isHomed", &aerotech::Axis::isHomed)
         .def_property_readonly("isBlocked", &aerotech::Axis::isBlocked)
         .def_property_readonly("id", &aerotech::Axis::id, "Corresponding axis id")

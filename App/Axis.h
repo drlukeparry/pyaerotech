@@ -59,10 +59,14 @@ public:
     uint8_t id() const { return mId; }
     uint32_t axisMask() const;
     
-    uint64_t status();
+    uint32_t status();
+    uint32_t driveStatus();
 
     bool isEnabled();
+    bool isEnabling();
+    bool inMotion();
     bool isHomed();
+    bool inPosition();
     bool isBlocked();
 
     void setLabel(const std::string &label) { mLabel = label; }

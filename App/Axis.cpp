@@ -65,66 +65,91 @@ void Axis::acknowlegeFault(const uint8_t taskId)
 /*
  * Position and control related commands
  */
-uint64_t Axis::status()
+uint32_t Axis::status()
 {
-    return 0;
+    return  this->getStatus(STATUSITEM_AxisStatus);
+}
+
+uint32_t Axis::driveStatus()
+{
+    return this->getStatus(STATUSITEM_DriveStatus);
+}
+
+bool Axis::inPosition()
+{
+    // AXISSTATUS_Enabling
+
+     uint32_t driveStatus = this->getStatus(STATUSITEM_DriveStatus);
+
+     bool statusBit = driveStatus & DRIVESTATUS_InPosition;
+
+     return statusBit;
+}
+
+bool Axis::inMotion()
+{
+    // AXISSTATUS_Enabling
+
+     uint32_t driveStatus = this->getStatus(STATUSITEM_DriveStatus);
+
+     bool statusBit = driveStatus & DRIVESTATUS_MoveActive;
+
+     return statusBit;
 }
 
 bool Axis::isEnabled()
 {
     // AXISSTATUS_Enabling
-     double value;
-     bool state = A3200StatusGetItem(mController->handle(), mAxisMask, STATUSITEM_AxisStatus, AXISSTATUS_Enabling, &value);
 
-     if(!state) {
-         throw A3200Exception(mController->getErrorString().c_str(), mController->getErrorCode());
-     }
+     uint32_t driveStatus = this->getStatus(STATUSITEM_DriveStatus);
 
-     return value;
+     bool statusBit = driveStatus & DRIVESTATUS_Enabled;
+
+     return statusBit;
+}
+
+bool Axis::isEnabling()
+{
+    // AXISSTATUS_Enabling
+
+     uint32_t axisStatus = this->getStatus(STATUSITEM_AxisStatus);
+
+     bool statusBit = axisStatus & AXISSTATUS_Enabling;
+
+     return statusBit;
 }
 
 bool Axis::isHomed()
 {     
-    double value;    
-    bool state = A3200StatusGetItem(mController->handle(), mAxisMask, STATUSITEM_AxisStatus, AXISSTATUS_Homed, &value);
+    uint32_t axisStatus = this->getStatus(STATUSITEM_AxisStatus);
 
-    if(!state) {
-        throw A3200Exception(mController->getErrorString().c_str(), mController->getErrorCode());
-    }
+    bool statusBit = axisStatus & AXISSTATUS_Homed;
 
-    return value;
+    return statusBit;
 }
 
 bool Axis::isBlocked()
 {
-    double value;    
-    bool state = A3200StatusGetItem(mController->handle(), mAxisMask, STATUSITEM_AxisStatus, AXISSTATUS_MotionBlocked, &value);
+    uint32_t axisStatus = this->getStatus(STATUSITEM_AxisStatus);
 
-    if(!state) {
-        throw A3200Exception(mController->getErrorString().c_str(), mController->getErrorCode());
-    }
+    bool statusBit = axisStatus & AXISSTATUS_MotionBlocked;
 
+    return statusBit;
 
-    return value;    
 }
 
 void Axis::home(const uint8_t taskId)
 {
-    this->mController->home(Ptr(this), taskId);
-    //A3200MotionHome(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask());
+    A3200MotionHome(mController->handle(), (TASKID) taskId, (AXISMASK) axisMask());
 }
 
 void Axis::move(const double position, const double speed, const uint8_t taskId)
 {
-    this->mController->move(Ptr(this), position, speed, taskId);
-
-#if 0
     if(speed > 1e-6){
         A3200MotionMoveAbs(mController->handle(), (TASKID) taskId, (AXISINDEX) mId, position, speed);
     } else {
-
+        A3200MotionMoveAbs(mController->handle(), (TASKID) taskId, (AXISINDEX) mId, position, mDefaultSpeed);
     }
-#endif
 }
 
 void Axis::moveRel(const double distance, const double speed, const uint8_t taskId)
@@ -263,3 +288,4 @@ double Axis::maxCurrent()
 {
     return this->getStatus(STATUSITEM_PeakCurrent);
 }
+
