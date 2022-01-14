@@ -92,8 +92,9 @@ public:
     /*
      * Input and Output related commands
      */
-    void setDigitalPin(uint64_t pin, bool state, const uint8_t taskId = 1);
-    bool digitalPin(uint64_t pin, const uint8_t taskId = 1);
+    void setDigitalOutputPin(uint64_t pin, bool state, const uint8_t taskId = 1);
+    bool digitalOutputPin(uint64_t pin, const uint8_t taskId = 1);
+    uint32_t digitalOutput();
 
     void setAnalogPin(const uint64_t pin, const double value, const uint8_t taskId = 1);
     double analogPin(const uint64_t pin, const uint8_t taskId = 1);
