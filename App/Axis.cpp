@@ -4,11 +4,9 @@
 
 #include <A3200AeroBasicCommands.h>
 
-#include <App/Controller.h>
-
-#include "Exception.h"
-#include "Controller.h"
 #include "Axis.h"
+#include "Controller.h"
+#include "Exception.h"
 
 using namespace aerotech;
 

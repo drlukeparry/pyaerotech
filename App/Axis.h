@@ -9,11 +9,9 @@
 #include <vector>
 #include <memory>
 
-
 #include <Eigen/Dense>
 
 #include "Options.h"
-
 
 namespace aerotech
 {
@@ -106,8 +104,7 @@ public:
 
 protected:
     uint8_t mId;
-    uint64_t mAxisMask;
-    
+
     double mDefaultSpeed;
     AxisState mState;
     std::string mLabel;
@@ -118,7 +115,6 @@ private:
     // Default construtor should be private only
     Axis();
     
-
 };
 
 } // end of namespace aerotech

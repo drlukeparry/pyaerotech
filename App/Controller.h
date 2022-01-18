@@ -11,8 +11,8 @@
 
 #include <Eigen/Dense>
 
-#include "Options.h"
 #include "Axis.h"
+#include "Options.h"
 
 namespace aerotech
 {
