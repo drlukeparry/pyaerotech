@@ -81,7 +81,7 @@ public:
     void move(const double position, const double speed = -1.0, const uint8_t taskId = 1);
     void moveRel(const double distance, const double speed = -1.0, const uint8_t taskId = 1);
 
-    void wait(uint64_t timeout = -1, bool inPosition = false);
+    void wait(int32_t timeout = -1, bool inPosition = false);
 
     double position();
     double velocity(const bool average = false);

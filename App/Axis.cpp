@@ -173,7 +173,7 @@ void Axis::setDefaultSpeed(double speed)
 }
 
 
-void Axis::wait(uint64_t timeout, bool inPosition)
+void Axis::wait(int32_t timeout, bool inPosition)
 {
     WAITOPTION waitOption = WAITOPTION_InPosition;
 
