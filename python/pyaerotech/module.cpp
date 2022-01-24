@@ -99,15 +99,17 @@ PYBIND11_MODULE(a3200, m) {
         .def("disable", &aerotech::PSO::disable, "Disables the PSO Mode on the Axis",
                         py::arg("taskId") = 1)
         .def("enableWindow", &aerotech::PSO::enableWindow, "Enables the PSO Windw Mode on the Axis",
-                       py::arg("taskId") = 1)
+                       py::arg("window") = 1, py::arg("taskId") = 1)
         .def("disableWindow", &aerotech::PSO::disableWindow, "Disables the PSO Window Mode on the Axis",
-                        py::arg("taskId") = 1)
+                       py::arg("window") = 1, py::arg("taskId") = 1)
 
         .def("reset",  &aerotech::PSO::reset, "Resets the counter registers on the Axis",
                        py::arg("hard") = true, py::arg("taskId") = 1)
         .def("arm", &aerotech::PSO::arm, "Arms the PSO firing on the Axis",
                     py::arg("taskId") = 1)
         .def("disarm", &aerotech::PSO::disarm, "Disarms the PSO firing on the Axis",
+                       py::arg("taskId") = 1)
+        .def("resetTrack", &aerotech::PSO::resetTrack, "Resets the tracking counters",
                        py::arg("taskId") = 1)
         .def("setFireContiniously", &aerotech::PSO::setFireContiniously, "Arms the PSO to fire continiously",
                                     py::arg("taskId") = 1)
@@ -158,7 +160,7 @@ PYBIND11_MODULE(a3200, m) {
                         py::arg("distance"), py::arg("speed") = -1.0, py::arg("taskId") = 1)
 
         .def("wait", &aerotech::Axis::wait,
-                      py::arg("timeout") = -1.0, py::arg("inPosition") = false)
+                      py::arg("timeout") = -1, py::arg("inPosition") = false)
 
         .def("setRampRate", &aerotech::Axis::setRampRate, "Sets the ramp rate, when a LINEAR ramp mode is used for the axis",
                             py::arg("rampRate"), py::arg("taskId") = 1)
@@ -253,10 +255,10 @@ PYBIND11_MODULE(a3200, m) {
                      py::arg("axes"), py::arg("position"), py::arg("velocity") = -1.0, py::arg("taskId") = 1)
         .def("move", py::overload_cast<Axis::Ptr, double, const double, uint8_t>(&aerotech::A3200Controller::move), "Move an axis",
                      py::arg("axis"), py::arg("position"), py::arg("velocity") = -1.0, py::arg("taskId") = 1)
-        .def("wait", py::overload_cast<const std::vector<Axis::Ptr> &, uint64_t, bool>(&aerotech::A3200Controller::wait), "Suspend operations and wait for motion to complete across all selected axes",
-                     py::arg("axes"), py::arg("timeout"), py::arg("inPosition") = false)
-        .def("wait", py::overload_cast<Axis::Ptr, uint64_t, bool>(&aerotech::A3200Controller::wait), "Suspend operations and wait until completion on the selected axis",
-                     py::arg("axis"), py::arg("timeout"), py::arg("inPosition") = false)
+        .def("wait", py::overload_cast<const std::vector<Axis::Ptr> &, int32_t, bool>(&aerotech::A3200Controller::wait), "Suspend operations and wait for motion to complete across all selected axes",
+                     py::arg("axes"), py::arg("timeout") = -1, py::arg("inPosition") = false)
+        .def("wait", py::overload_cast<Axis::Ptr, int32_t, bool>(&aerotech::A3200Controller::wait), "Suspend operations and wait until completion on the selected axis",
+                     py::arg("axis"), py::arg("timeout") = -1, py::arg("inPosition") = false)
         .def("setRampRate", py::overload_cast<const std::vector<Axis::Ptr> &, const double, const uint8_t>(&aerotech::A3200Controller::setRampRate), "Sets the ramp rate, when a LINEAR ramp mode is used for the axes",
                             py::arg("axes"), py::arg("rampRate"), py::arg("taskId") = 1)
         .def("setRampRate", py::overload_cast<Axis::Ptr, const double, const uint8_t>(&aerotech::A3200Controller::setRampRate), "Sets the ramp rate, when a LINEAR ramp mode is used for the axis",
