@@ -2,6 +2,7 @@
 #define AEROTECH_PSO_H_HEADER_HAS_BEEN_INCLUDED
 
 #include "AEROTECH_Export.h"
+
 #include <cstdint>
 #include <vector>
 #include <memory>
@@ -63,6 +64,8 @@ public:
     void setPulseDelayOnly(const double totalTime, const double onTime, const double delayTime,
                            const uint8_t taskId = 1);
     
+    void resetTrack( uint8_t taskId = 1);
+
     // PSODISTANCE X FIXED %d
     void setFireDistance(const double distance, const uint8_t taskId = 1);
     void clearFireDistance(const uint8_t taskId = 1);
@@ -77,8 +80,10 @@ public:
     uint32_t windowArrayIndexLocation(const uint8_t windowNumber = 1);
 
     void arm(const uint8_t taskId = 1); // A3200PSOWindowOn
-    void enableWindow(const uint8_t taskId = 1); // A3200PSOWindowOn
-    void disableWindow(const uint8_t taskId = 1); // A3200PSOWindowOff
+    void enableWindow(const uint8_t windowNumber = 1, const uint8_t taskId = 1); // A3200PSOWindowOn
+    void disableWindow(const uint8_t windowNumber = 1 , const uint8_t taskId = 1); // A3200PSOWindowOff
+    void resetWindow(const uint8_t windowNumber = 1, const uint8_t taskId = 1);
+
     void enable(const uint8_t taskId = 1); // A3200PSOWindowOn
     void disable(const uint8_t taskId = 1); // A3200PSOWindowOff
     void reset(bool hard = true, const uint8_t taskId = 1);

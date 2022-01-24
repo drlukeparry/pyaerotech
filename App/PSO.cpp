@@ -52,6 +52,11 @@ void PSO::reset(bool hard, const uint8_t taskId)
 
 }
 
+void PSO::resetTrack( uint8_t taskId)
+{
+    A3200PSOTrackReset(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), 3 );
+}
+
 void PSO::setEncoderAxis(int32_t encoderId, int32_t encoderId2, int32_t encoderId3,
                     bool invert, uint8_t taskId)
 {
@@ -224,11 +229,8 @@ void PSO::setWindowMask(std::vector<double> mask, EdgeMode edgeMode, const uint3
     // note for HpE drive contorller, max elements in the PSO FIFO buffer is 2,097,152
     // and for the Cp Drive Controller the max elements is 262,144
 
-    if(mask.size() > 2097152) {
+    if(mask.size() > 2097152)
         throw A3200Exception("Mask size is too large for controller", 0);
-    }
-
-    uint32_t idx = 0;
 
     char buffer[30];
     std::sprintf(buffer, "$global[%d]", arrayIdx);
@@ -288,32 +290,38 @@ void PSO::disable(const uint8_t taskId)
     }
 }
 
-void PSO::enableWindow(const uint8_t taskId)
+void PSO::enableWindow(const uint8_t windowNumber, const uint8_t taskId)
 {
     // A3200PSOWindowOn
-    const uint8_t windowMode = 1;
 
-    bool status = A3200PSOWindowOn(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowMode);
+    bool status = A3200PSOWindowOn(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowNumber);
 
     if(!status) {
         throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
-    } else {
-        mIsEnabled = true;
     }
 }
 
-void PSO::disableWindow(const uint8_t taskId)
+
+void PSO::resetWindow(const uint8_t windowNumber, const uint8_t taskId)
 {
-    // A3200PSOWindowOff
+    // PSOWINDOW RESET Command
 
-    const uint8_t windowMode = 1;
 
-    bool status = A3200PSOWindowOff(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowMode);
+    bool status = A3200PSOWindowReset(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowNumber,2 );
 
     if(!status) {
         throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
-    } else {
-        mIsEnabled = false;
+    }
+}
+
+void PSO::disableWindow(const uint8_t windowNumber, const uint8_t taskId)
+{
+    //  This command is the same as "PSOWINDOW OFF" in AeroBasic.
+
+    bool status = A3200PSOWindowOff(mAxis->controller()->handle(), (TASKID) taskId, (AXISINDEX) mAxis->id(), windowNumber);
+
+    if(!status) {
+        throw A3200Exception(mAxis->controller()->getErrorString().c_str(), mAxis->controller()->getErrorCode());
     }
 }
 
