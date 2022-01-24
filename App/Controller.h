@@ -98,8 +98,8 @@ public:
     void move(const std::vector<Axis::Ptr> &axes,  std::vector<double> distance, const double speed = -1.0, const uint8_t taskId = 1);
     void move(Axis::Ptr axis, const double distance, const double speed = -1.0, const uint8_t taskId = 1);
 
-    void wait(const std::vector<Axis::Ptr> &axes, uint64_t timeout, bool inPosition = false);
-    void wait(Axis::Ptr axis, uint64_t timeout, bool inPosition = false);
+    void wait(const std::vector<Axis::Ptr> &axes, int32_t timeout = -1, bool inPosition = false);
+    void wait(Axis::Ptr axis, int32_t timeout = -1, bool inPosition = false);
 
     std::vector<double> position(const std::vector<Axis::Ptr> &axes) const;
     double position(Axis::Ptr axis) const;

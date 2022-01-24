@@ -491,7 +491,7 @@ void A3200Controller::setDefaultSpeed(const double speed)
     mDefaultSpeed = speed;
 }
 
-void A3200Controller::wait(const std::vector<Axis::Ptr> &axes, uint64_t timeout, bool inPosition)
+void A3200Controller::wait(const std::vector<Axis::Ptr> &axes, int32_t timeout, bool inPosition)
 {
 
     WAITOPTION waitOption = WAITOPTION_InPosition;
@@ -507,7 +507,7 @@ void A3200Controller::wait(const std::vector<Axis::Ptr> &axes, uint64_t timeout,
 
 }
 
-void A3200Controller::wait(Axis::Ptr axis, uint64_t timeout, bool inPosition)
+void A3200Controller::wait(Axis::Ptr axis, int32_t timeout, bool inPosition)
 {
     this->wait(std::vector<Axis::Ptr>{axis}, timeout, inPosition);
 }
